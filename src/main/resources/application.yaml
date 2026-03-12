@@ -1,0 +1,36 @@
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5432/train_ticket_service
+    username: postgres
+    password:  root
+    driver-class-name: org.postgresql.Driver
+
+  kafka:
+    producer:
+      retries: 5
+      acks: all
+      properties:
+        retry.backoff.ms: 1000
+        delivery.timeout.ms: 120000
+
+  jpa:
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+    show-sql: true
+    hibernate:
+      ddl-auto: update
+
+  application:
+    name: train-ticket-service
+    secret: 5bce874940fd82b367610fcf82bdd85e3a3d36959b4b65b273e5e2a60663f718
+    sender-email: yvgnantnv@yandex.ru
+    jwt:
+      secret-key: AF958BBA8392CF55F31277A95F8082086B5094B6422D171402478DAB3A86FA0E #  для подписи jwt
+      user-access-token-expiration: 3600000  # 1 час
+      user-refresh-token-expiration: 518400000 # 6 дней
+
+server:
+  port: 8080
+  servlet:
+    context-path: /train-ticket-service/api/v1
