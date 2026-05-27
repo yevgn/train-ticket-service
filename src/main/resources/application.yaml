@@ -2,16 +2,8 @@ spring:
   datasource:
     url: jdbc:postgresql://localhost:5432/train_ticket_service
     username: postgres
-    password:  root
+    password: root
     driver-class-name: org.postgresql.Driver
-
-  kafka:
-    producer:
-      retries: 5
-      acks: all
-      properties:
-        retry.backoff.ms: 1000
-        delivery.timeout.ms: 120000
 
   jpa:
     properties:
@@ -34,3 +26,4 @@ server:
   port: 8080
   servlet:
     context-path: /train-ticket-service/api/v1
+
