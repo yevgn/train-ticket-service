@@ -16,6 +16,13 @@ import ru.antonov.trainticketservice.ticket.outbox.repository.OutboxRepository;
 import java.time.LocalDateTime;
 import java.util.List;
 
+/**
+ * Сохраняет изменения агрегата билета с использованием Event Sourcing и
+ * паттерна Transactional Outbox.
+ * <p>
+ * Каждое несохраненное событие записывается в Event Store и в той же
+ * транзакции дублируется как запись Outbox.
+ */
 @Repository
 @RequiredArgsConstructor
 @Slf4j
@@ -25,6 +32,12 @@ public class EventSourcedTicketRepositoryWithOutbox {
 
     private final ObjectMapper mapper;
 
+    /**
+     * Сохраняет все события, созданные агрегатом, и создает соответствующие записи Outbox.
+     *
+     * @param aggregate агрегат с несохраненными событиями
+     * @throws JsonProcessingException если полезную нагрузку события не удалось сериализовать
+     */
     @Transactional
     public void save(AggregateRoot aggregate) throws JsonProcessingException {
         List<Event> uncommittedEvents = aggregate.getUncommitedEvents();

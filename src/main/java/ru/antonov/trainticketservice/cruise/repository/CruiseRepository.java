@@ -5,7 +5,6 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 import ru.antonov.trainticketservice.cruise.dto.CruiseShortResponseDto;
 import ru.antonov.trainticketservice.cruise.entity.Cruise;
-import ru.antonov.trainticketservice.user.entity.User;
 
 import java.time.LocalDateTime;
 import java.util.List;

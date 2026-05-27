@@ -17,6 +17,12 @@ import ru.antonov.trainticketservice.ticket.query.repository.TicketViewRepositor
 import java.util.Optional;
 import java.util.UUID;
 
+/**
+ * Создает и обновляет read models билетов на основе сериализованных доменных событий.
+ * <p>
+ * Проекция идемпотентна по {@link ProcessedEntry}, поэтому повторная доставка
+ * сообщения из Kafka не применяет одну и ту же запись Outbox дважды.
+ */
 @Service
 @RequiredArgsConstructor
 @Slf4j
@@ -27,6 +33,13 @@ public class TicketProjectorService {
 
     private final ObjectMapper objectMapper;
 
+    /**
+     * Проецирует одно событие билета в query-side таблицы.
+     *
+     * @param entryId уникальный идентификатор записи Outbox для обеспечения идемпотентности
+     * @param topic Kafka topic, определяющий тип полезной нагрузки события
+     * @param payload сериализованная полезная нагрузка события
+     */
     @Transactional
     public void handle(UUID entryId, String topic, String payload) {
         if (processedEntryRepository.existsById(entryId)) {
@@ -126,6 +139,11 @@ public class TicketProjectorService {
         ticketViewRepository.save(entity);
     }
 
+    /**
+     * Создает read models билета и занятого места после резервирования.
+     *
+     * @param data данные события резервирования
+     */
     public void handleTicketReserved(TicketReservedEventData data) {
         TicketView ticketView = TicketView.builder()
                 .ticketId(data.getAggregateId())
@@ -173,6 +191,11 @@ public class TicketProjectorService {
         occupiedSeatViewRepository.save(seatView);
     }
 
+    /**
+     * Помечает зарезервированный билет как забронированный после успешной оплаты.
+     *
+     * @param data данные события бронирования
+     */
     public void handleTicketBooked(TicketBookedEventData data) {
         Optional<TicketView> entityOpt = ticketViewRepository.findById(data.getAggregateId());
         if (entityOpt.isEmpty()) {
@@ -186,6 +209,11 @@ public class TicketProjectorService {
         ticketViewRepository.save(entity);
     }
 
+    /**
+     * Помечает билет как отмененный и освобождает проекцию занятого места.
+     *
+     * @param data данные события отмены
+     */
     public void handleTicketCancelled(TicketCancelledEventData data) {
         Optional<TicketView> entityOpt = ticketViewRepository.findById(data.getAggregateId());
         if (entityOpt.isEmpty()) {

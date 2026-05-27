@@ -7,7 +7,6 @@ import org.springframework.stereotype.Service;
 import ru.antonov.trainticketservice.cruise.entity.Stop;
 import ru.antonov.trainticketservice.cruise.repository.StopRepository;
 
-import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 

@@ -7,21 +7,30 @@ import org.springframework.transaction.annotation.Transactional;
 import ru.antonov.trainticketservice.ticket.eventstore.entity.Event;
 import ru.antonov.trainticketservice.ticket.eventstore.repository.EventRepository;
 import ru.antonov.trainticketservice.ticket.query.projector.TicketProjectorService;
+import ru.antonov.trainticketservice.ticket.query.repository.OccupiedSeatViewRepository;
 import ru.antonov.trainticketservice.ticket.query.repository.TicketViewRepository;
 
 import java.util.List;
 
+/**
+ * Восстанавливает read model путем повторного проигрывания событий из Event Store.
+ */
 @Service
 @RequiredArgsConstructor
 @Slf4j
 public class ReadModelRestoreService {
     private final EventRepository eventRepository;
     private final TicketProjectorService projectorService;
-    private final TicketViewRepository viewRepository;
+    private final TicketViewRepository ticketViewRepository;
+    private final OccupiedSeatViewRepository occupiedSeatViewRepository;
 
+    /**
+     * Удаляет текущие views и проигрывает сохраненные события по порядку времени.
+     */
     @Transactional
     public void restore() {
-        viewRepository.deleteAll();
+        ticketViewRepository.deleteAll();
+        occupiedSeatViewRepository.deleteAll();
 
         List<Event> events = eventRepository.findAllOrderByTimestamp();
 

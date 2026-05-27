@@ -22,6 +22,9 @@ import ru.antonov.trainticketservice.user.entity.User;
 import java.util.List;
 import java.util.UUID;
 
+/**
+ * REST-контроллер query-side части для операций чтения билетов.
+ */
 @RestController
 @RequestMapping("/query/tickets")
 @RequiredArgsConstructor
@@ -30,6 +33,13 @@ import java.util.UUID;
 public class QueryController {
     private final TicketQueryService queryService;
 
+    /**
+     * Возвращает историю билетов пользователя, доступную авторизованному principal.
+     *
+     * @param principal авторизованный пользователь
+     * @param userId идентификатор целевого пользователя
+     * @return ответ с историей билетов
+     */
     @Operation(
             summary = "Истории покупок конкретного пользователя",
             security = @SecurityRequirement(name = "bearerAuth")
@@ -82,6 +92,13 @@ public class QueryController {
         );
     }
 
+    /**
+     * Возвращает информацию о билете, доступную авторизованному principal.
+     *
+     * @param principal авторизованный пользователь
+     * @param ticketId идентификатор билета
+     * @return ответ с информацией о билете
+     */
     @Operation(
             summary = "Поиск информации о билете по id",
             security = @SecurityRequirement(name = "bearerAuth")

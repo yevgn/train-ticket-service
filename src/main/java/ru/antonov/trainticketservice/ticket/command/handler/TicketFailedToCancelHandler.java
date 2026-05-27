@@ -26,7 +26,10 @@ import ru.antonov.trainticketservice.user.service.UserService;
 import java.time.LocalDateTime;
 import java.util.List;
 
-
+/**
+ * Обрабатывает callback о неудачном возврате средств и возвращает агрегат
+ * билета в состояние BOOKED.
+ */
 @Component
 @Slf4j
 public class TicketFailedToCancelHandler extends HandlerRoot<TicketAggregate>{
@@ -64,6 +67,12 @@ public class TicketFailedToCancelHandler extends HandlerRoot<TicketAggregate>{
         }
     }
 
+    /**
+     * Добавляет событие неудачной отмены при ошибке обработки возврата.
+     *
+     * @param aggregate агрегат билета, восстановленный из истории
+     * @param command команда неудачной отмены
+     */
     @Override
     public void applyEvent(TicketAggregate aggregate, Command command) {
         if(aggregate.getStatus() == TicketAggregate.Status.BOOKED) return;

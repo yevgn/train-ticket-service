@@ -23,6 +23,9 @@ import ru.antonov.trainticketservice.user.service.UserService;
 import java.time.LocalDateTime;
 import java.util.List;
 
+/**
+ * Обрабатывает callback об успешном возврате средств и завершает отмену билета.
+ */
 @Component
 @Slf4j
 public class TicketCancelledHandler extends HandlerRoot<TicketAggregate>{
@@ -53,6 +56,12 @@ public class TicketCancelledHandler extends HandlerRoot<TicketAggregate>{
         return (TicketCancelPendingEventData) eventDataMapper.toEventData(last);
     }
 
+    /**
+     * Добавляет событие отмены после завершения возврата средств.
+     *
+     * @param aggregate агрегат билета, восстановленный из истории
+     * @param command команда подтверждения отмены
+     */
     @Override
     public void applyEvent(TicketAggregate aggregate, Command command) {
         if (aggregate.getStatus() == TicketAggregate.Status.CANCELLED) return;

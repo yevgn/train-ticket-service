@@ -22,6 +22,10 @@ import ru.antonov.trainticketservice.user.entity.User;
 import java.time.LocalDateTime;
 import java.util.List;
 
+/**
+ * Обрабатывает callback о неудачной оплате и фиксирует, что бронирование
+ * билета не было завершено успешно.
+ */
 @Component
 @Slf4j
 public class TicketFailedToBookHandler extends HandlerRoot<TicketAggregate> {
@@ -47,6 +51,12 @@ public class TicketFailedToBookHandler extends HandlerRoot<TicketAggregate> {
         return (TicketReservedEventData) eventDataMapper.toEventData(last);
     }
 
+    /**
+     * Добавляет событие неудачного бронирования и сохраняет контекст для уведомлений.
+     *
+     * @param aggregate агрегат билета, восстановленный из истории
+     * @param command команда неудачного бронирования
+     */
     @Override
     public void applyEvent(TicketAggregate aggregate, Command command) {
         if (aggregate.getStatus() == TicketAggregate.Status.CANCELLED) return;

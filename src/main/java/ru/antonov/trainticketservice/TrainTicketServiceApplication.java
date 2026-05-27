@@ -26,8 +26,8 @@ public class TrainTicketServiceApplication implements CommandLineRunner {
 	@Override
 	public void run(String... args) throws Exception {
 		createAdmin();
-
 	}
+
 	public void createAdmin(){
 		if(!userRepository.existsByEmail("example@gmail.com")) {
 			User user = User.builder()

@@ -11,12 +11,21 @@ import ru.antonov.trainticketservice.ticket.query.repository.OccupiedSeatViewRep
 import java.util.List;
 import java.util.UUID;
 
+/**
+ * Query-side сервис для занятых мест, построенных на основе проекций билетов.
+ */
 @Service
 @Slf4j
 @RequiredArgsConstructor
 public class OccupiedSeatQueryService {
     private final OccupiedSeatViewRepository repository;
 
+    /**
+     * Возвращает занятые места для указанного рейса.
+     *
+     * @param cruiseId идентификатор рейса
+     * @return DTO занятых мест
+     */
     public List<OccupiedSeatDto> findOccupiedSeatsByCruiseId(UUID cruiseId){
         List<OccupiedSeatView> views = repository.findAllByCruiseId(cruiseId);
 

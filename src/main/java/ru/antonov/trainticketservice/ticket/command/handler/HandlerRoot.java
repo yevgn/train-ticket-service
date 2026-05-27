@@ -23,7 +23,14 @@ import java.util.List;
 import java.util.UUID;
 import java.util.function.Function;
 
-
+/**
+ * Базовый обработчик команд для event-sourced агрегатов билета.
+ * <p>
+ * Загружает историю агрегата, передает командную валидацию наследникам,
+ * сохраняет созданные события и повторяет операцию при конфликте optimistic locking.
+ *
+ * @param <T> тип агрегата, обрабатываемого наследником
+ */
 @RequiredArgsConstructor
 @Slf4j
 public abstract class HandlerRoot<T extends AggregateRoot> {
@@ -34,6 +41,11 @@ public abstract class HandlerRoot<T extends AggregateRoot> {
 
     private final Function<UUID, T> aggregateFactory;
 
+    /**
+     * Выполняет команду над агрегатом, восстановленным из Event Store.
+     *
+     * @param command команда, определяющая агрегат и требуемое действие
+     */
     @Retryable(
             retryFor = {DataIntegrityViolationException.class, OptimisticLockException.class},
             maxAttempts = 3,
@@ -91,5 +103,11 @@ public abstract class HandlerRoot<T extends AggregateRoot> {
         );
     }
 
+    /**
+     * Выполняет проверки, специфичные для команды, и добавляет соответствующее событие.
+     *
+     * @param aggregate агрегат, восстановленный из истории
+     * @param command обрабатываемая команда
+     */
     public abstract void applyEvent(T aggregate, Command command);
 }

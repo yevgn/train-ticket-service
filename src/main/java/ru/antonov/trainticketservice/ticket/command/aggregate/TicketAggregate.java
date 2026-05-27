@@ -12,6 +12,12 @@ import ru.antonov.trainticketservice.ticket.eventstore.eventdata.*;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
+/**
+ * Event-sourced агрегат, описывающий жизненный цикл билета.
+ * <p>
+ * Все изменения состояния фиксируются как доменные события, которые затем
+ * сохраняются event-sourced репозиторием.
+ */
 @SuperBuilder
 @Getter
 public class TicketAggregate extends AggregateRoot {
@@ -22,10 +28,21 @@ public class TicketAggregate extends AggregateRoot {
     @Autowired
     private ObjectMapper mapper;
 
+    /**
+     * Создает агрегат билета для указанного идентификатора.
+     *
+     * @param aggregateId идентификатор агрегата билета
+     */
     public TicketAggregate(UUID aggregateId){
         super(aggregateId);
     }
 
+    /**
+     * Применяет событие билета к текущему состоянию агрегата в памяти.
+     *
+     * @param event метаданные события, содержащие тип события и версию
+     * @param data payload
+     */
     @Override
     public void handleEvent(Event event, EventData data) {
 
@@ -45,26 +62,56 @@ public class TicketAggregate extends AggregateRoot {
         }
     }
 
+    /**
+     * Фиксирует событие резервирования билета.
+     *
+     * @param data данные резервирования
+     */
     public void reserveTicket(TicketReservedEventData data) {
         createEventAndApply(data, Event.EventType.TICKET_RESERVED);
     }
 
+    /**
+     * Фиксирует запрос на отмену билета.
+     *
+     * @param data данные запроса на отмену
+     */
     public void pendTicketToCancel(TicketCancelPendingEventData data) {
         createEventAndApply(data, Event.EventType.TICKET_CANCEL_PENDING);
     }
 
+    /**
+     * Фиксирует неудачное бронирование или ошибку оплаты.
+     *
+     * @param data данные ошибки бронирования
+     */
     public void failToBookTicket(TicketFailedToBookEventData data) {
         createEventAndApply(data, Event.EventType.TICKET_FAILED_TO_BOOK);
     }
 
+    /**
+     * Фиксирует неудачную отмену или ошибку возврата средств.
+     *
+     * @param data данные ошибки отмены
+     */
     public void failToCancelTicket(TicketFailedToCancelEventData data){
         createEventAndApply(data, Event.EventType.TICKET_FAILED_TO_CANCEL);
     }
 
+    /**
+     * Фиксирует успешное бронирование билета.
+     *
+     * @param data данные подтверждения бронирования
+     */
     public void bookTicket(TicketBookedEventData data) {
         createEventAndApply(data, Event.EventType.TICKET_BOOKED);
     }
 
+    /**
+     * Фиксирует успешную отмену билета.
+     *
+     * @param data данные подтверждения отмены
+     */
     public void cancelTicket(TicketCancelledEventData data) {
         createEventAndApply(data, Event.EventType.TICKET_CANCELLED);
     }

@@ -19,6 +19,9 @@ import java.util.List;
 
 import java.util.UUID;
 
+/**
+ * Query-side сервис для чтения проекций билетов с проверкой прав доступа.
+ */
 @Service
 @Slf4j
 @RequiredArgsConstructor
@@ -26,6 +29,13 @@ public class TicketQueryService {
     private final TicketViewRepository viewRepository;
     private final UserService userService;
 
+    /**
+     * Возвращает историю билетов пользователя, если principal является этим пользователем или администратором.
+     *
+     * @param targetId пользователь, чьи билеты запрашиваются
+     * @param principal авторизованный пользователь
+     * @return краткие DTO билетов из read model
+     */
     public List<TicketShortDto> findTicketsByUserId(
             UUID targetId, User principal
     ) {
@@ -47,6 +57,13 @@ public class TicketQueryService {
                 .toList();
     }
 
+    /**
+     * Возвращает полную информацию о билете, если principal имеет к нему доступ.
+     *
+     * @param ticketId идентификатор билета
+     * @param principal авторизованный пользователь
+     * @return полный DTO билета
+     */
     public TicketDto findTicketById(UUID ticketId, User principal) {
         TicketView entity = viewRepository.findById(ticketId).orElseThrow(
                 () -> new EntityNotFoundException(
@@ -61,6 +78,13 @@ public class TicketQueryService {
         return DtoFactory.makeTicketDto(entity);
     }
 
+    /**
+     * Возвращает билеты для сегмента рейса.
+     *
+     * @param cruiseId идентификатор рейса
+     * @param stopId идентификатор остановки, используемый в запросе репозитория
+     * @return краткие DTO билетов
+     */
     public List<TicketShortDto> findAllByCruiseIdAndStopId(UUID cruiseId, UUID stopId){
         return viewRepository.findAllByCruiseIdAndStopId(cruiseId, stopId).stream()
                 .map(DtoFactory::makeTicketShortDto)

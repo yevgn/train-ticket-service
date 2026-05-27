@@ -15,10 +15,13 @@ import ru.antonov.trainticketservice.ticket.eventstore.eventdata.TicketBookedEve
 import ru.antonov.trainticketservice.ticket.eventstore.eventdata.TicketReservedEventData;
 import ru.antonov.trainticketservice.ticket.eventstore.repository.EventRepository;
 
-
 import java.time.LocalDateTime;
 import java.util.List;
 
+/**
+ * Обрабатывает callback об успешной оплате и переводит зарезервированный билет
+ * в статус забронированного.
+ */
 @Component
 @Slf4j
 public class TicketBookedHandler extends HandlerRoot<TicketAggregate> {
@@ -30,6 +33,12 @@ public class TicketBookedHandler extends HandlerRoot<TicketAggregate> {
         super(eventRepository, eventSourcedTicketRepositoryWithOutbox, eventDataMapper, TicketAggregate::new);
     }
 
+    /**
+     * Добавляет событие бронирования, если агрегат находится в статусе RESERVED.
+     *
+     * @param aggregate агрегат билета, восстановленный из истории
+     * @param command команда подтверждения бронирования
+     */
     @Override
     public void applyEvent(TicketAggregate aggregate, Command command) {
         if (aggregate.getStatus() == TicketAggregate.Status.BOOKED) return;

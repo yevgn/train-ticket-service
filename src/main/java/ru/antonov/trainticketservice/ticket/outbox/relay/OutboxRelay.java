@@ -22,6 +22,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
+/**
+ * Фоновый relay, публикующий ожидающие записи Transactional Outbox в Kafka.
+ * <p>
+ * Записи отправляются с несколькими повторными попытками, после чего
+ * переносятся в dead-letter topic.
+ */
 @Component
 @Slf4j
 @RequiredArgsConstructor
@@ -37,6 +43,9 @@ public class OutboxRelay {
 
     private final OutboxRepository outboxRepository;
 
+    /**
+     * Публикует пакет ожидающих записей Outbox в Kafka topics.
+     */
     @Scheduled(fixedDelay = 1000)
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     public void publishPendingEvents() {

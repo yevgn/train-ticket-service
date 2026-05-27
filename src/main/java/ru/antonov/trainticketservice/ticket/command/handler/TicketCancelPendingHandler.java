@@ -21,6 +21,12 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
+/**
+ * Обрабатывает пользовательский запрос на начало отмены билета.
+ * <p>
+ * Проверяет владельца, текущий статус и допустимое время отмены, затем
+ * фиксирует событие ожидания отмены для асинхронной обработки возврата.
+ */
 @Component
 @Slf4j
 public class TicketCancelPendingHandler extends HandlerRoot<TicketAggregate>{
@@ -99,6 +105,12 @@ public class TicketCancelPendingHandler extends HandlerRoot<TicketAggregate>{
         return (TicketBookedEventData) eventDataMapper.toEventData(last);
     }
 
+    /**
+     * Добавляет событие ожидания отмены после проверки запроса.
+     *
+     * @param aggregate агрегат билета, восстановленный из истории
+     * @param command команда запроса отмены
+     */
     @Override
     public void applyEvent(TicketAggregate aggregate, Command command) {
         UUID userId = ((TicketCancelPendingCommand) command).getUserId();

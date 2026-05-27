@@ -10,6 +10,10 @@ import java.util.UUID;
 
 // todo ПОВЕСИТЬ ИНДЕКСЫ В БД
 
+/**
+ * Запись Transactional Outbox, создаваемая вместе с доменным событием и позже
+ * публикуемая в Kafka через {@link ru.antonov.trainticketservice.ticket.outbox.relay.OutboxRelay}.
+ */
 @Getter
 @Setter
 @AllArgsConstructor

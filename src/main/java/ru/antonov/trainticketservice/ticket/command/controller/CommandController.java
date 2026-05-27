@@ -24,6 +24,12 @@ import ru.antonov.trainticketservice.ticket.command.dto.TicketBookDto;
 import ru.antonov.trainticketservice.ticket.command.dto.TicketCancelDto;
 import ru.antonov.trainticketservice.user.entity.User;
 
+/**
+ * REST-контроллер command-side части для операций изменения билетов.
+ * <p>
+ * Принимает пользовательские запросы и передает их command handlers,
+ * которые создают события агрегата билета.
+ */
 @RestController
 @RequestMapping("/command/tickets")
 @RequiredArgsConstructor
@@ -33,6 +39,13 @@ public class CommandController {
     private final TicketCancelPendingHandler ticketCancelPendingHandler;
     private final TicketReservedHandler ticketReservedHandler;
 
+    /**
+     * Запускает асинхронную отмену билета для авторизованного пользователя.
+     *
+     * @param principal авторизованный пользователь
+     * @param dto тело запроса на отмену
+     * @return пустой ответ {@code 202 Accepted}
+     */
     @Operation(
             summary = "Возврат билета",
             security = @SecurityRequirement(name = "bearerAuth")
@@ -111,6 +124,13 @@ public class CommandController {
         return ResponseEntity.accepted().build();
     }
 
+    /**
+     * Запускает асинхронное бронирование билета для авторизованного пользователя.
+     *
+     * @param principal авторизованный пользователь
+     * @param dto тело запроса на бронирование
+     * @return пустой ответ {@code 202 Accepted}
+     */
     @Operation(
             summary = "Покупка билета",
             security = @SecurityRequirement(name = "bearerAuth")

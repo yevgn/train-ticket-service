@@ -26,6 +26,12 @@ import ru.antonov.trainticketservice.user.service.UserService;
 import java.time.LocalDateTime;
 import java.util.*;
 
+/**
+ * Обрабатывает команды резервирования билета.
+ * <p>
+ * Проверяет маршрут, место, тариф, владельца и временные ограничения,
+ * после чего добавляет событие резервирования в агрегат билета.
+ */
 @Component
 @Slf4j
 public class TicketReservedHandler extends HandlerRoot<TicketAggregate> {
@@ -74,6 +80,12 @@ public class TicketReservedHandler extends HandlerRoot<TicketAggregate> {
         }
     }
 
+    /**
+     * Создает событие резервирования на основе запроса после доменной валидации.
+     *
+     * @param aggregate агрегат билета, восстановленный из истории
+     * @param command команда резервирования
+     */
     @Override
     public void applyEvent(TicketAggregate aggregate, Command command) {
         UUID userId = ((TicketReserveCommand) command).getUserId();
